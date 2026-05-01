@@ -1,0 +1,3 @@
+[submodule "suchai-flight-software-v2"]
+	path = suchai-flight-software-v2
+	url = git@gitlab.com:spel-uchile/flight-software/suchai-flight-software-v2.git
