@@ -1,0 +1,13 @@
+# Ignore build directories
+**/build/
+**/build-*/
+
+# Ignore git metadata
+.git
+.git/
+.gitignore
+.gitmodules
+**/.git
+**/.git/
+**/.gitignore
+**/.gitmodules
