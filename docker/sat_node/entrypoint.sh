@@ -14,4 +14,4 @@ sleep 2
 # It will connect to the local Hub B (localhost:8001/8002)
 echo "Starting Satellite Node..."
 cd /suchai/build/apps/simple
-./suchai-app
+exec ./suchai-app

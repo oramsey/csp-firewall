@@ -19,12 +19,12 @@ COPY suchai-flight-software-v2 /suchai
 COPY libcsp-gs /suchai/src/lib/libcsp
 
 # Build the Malicious node (Node 11)
-# We point it to 'ground-hub-a' which will be the service name in docker-compose
+# We point it to 'ground-node-a' which will be the service name in docker-compose
 RUN rm -rf build && \
     cmake -B build -DAPP=simple \
     -DSCH_COMM_NODE=11 \
-    -DSCH_COMM_ZMQ_IN="\"tcp://ground-hub-a:8001\"" \
-    -DSCH_COMM_ZMQ_OUT="\"tcp://ground-hub-a:8002\"" && \
+    -DSCH_COMM_ZMQ_IN="\"tcp://ground-node-a:8001\"" \
+    -DSCH_COMM_ZMQ_OUT="\"tcp://ground-node-a:8002\"" && \
     cmake --build build
 
 # Copy the entrypoint script

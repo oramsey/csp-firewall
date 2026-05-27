@@ -16,4 +16,4 @@ sleep 2
 # It will connect to the local hub by default (localhost:8001/8002)
 echo "Starting Benign Ground Node..."
 cd /suchai/build/apps/simple
-./suchai-app
+exec ./suchai-app
