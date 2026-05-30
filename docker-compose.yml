@@ -37,7 +37,7 @@ services:
       dockerfile: Dockerfile
     container_name: firewall
     volumes:
-      - ./docker/firewall/firewall.py:/app/firewall.py
+      - ./docker/firewall:/app
     environment:
       - HUB_A_IP=ground-node-a
       - HUB_B_IP=sat-node-b
