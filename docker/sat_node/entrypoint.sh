@@ -11,7 +11,12 @@ cd /suchai
 sleep 2
 
 # Start Satellite Node (Node 1)
-# It will connect to the local Hub B (localhost:8001/8002)
-echo "Starting Satellite Node..."
+echo "Ensuring build is up to date..."
+cd /suchai
+if [ ! -d "build" ]; then
+    cmake -B build -DAPP=simple -DSCH_COMM_NODE=1
+fi
+cmake --build build
+
 cd /suchai/build/apps/simple
 exec ./suchai-app

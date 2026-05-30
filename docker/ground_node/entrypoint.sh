@@ -13,7 +13,13 @@ cd /suchai
 sleep 2
 
 # Start Benign Ground Node (Node 10)
-# It will connect to the local hub by default (localhost:8001/8002)
-echo "Starting Benign Ground Node..."
+echo "Ensuring build is up to date..."
+cd /suchai
+# Only configure if build folder doesn't exist, then build
+if [ ! -d "build" ]; then
+    cmake -B build -DAPP=simple -DSCH_COMM_NODE=10
+fi
+cmake --build build
+
 cd /suchai/build/apps/simple
 exec ./suchai-app
