@@ -41,6 +41,7 @@ services:
     environment:
       - HUB_A_IP=ground-node-a
       - HUB_B_IP=sat-node-b
+      - NODE_POLICY_ENABLED=${NODE_POLICY_ENABLED:-0}
     depends_on:
       - ground-node-a
       - sat-node-b
