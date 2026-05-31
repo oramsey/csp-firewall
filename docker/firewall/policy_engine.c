@@ -11,7 +11,7 @@
 #define PORT_DBG    13
 #define PORT_DIAG   14
 
-bool is_allowed(csp_header_t *header) {
+bool is_allowed(csp_header_t *header, const uint8_t *payload, size_t payload_len) {
     if (!header->valid) {
         printf("  [Policy] REJECTED: Invalid CSP Header\n");
         return false;
@@ -29,21 +29,44 @@ bool is_allowed(csp_header_t *header) {
     // --- PORT-LEVEL POLICY ---
     const char* port_policy_env = getenv("PORT_POLICY_ENABLED");
     if (port_policy_env != NULL && strcmp(port_policy_env, "1") == 0) {
-        // Only apply these rules to traffic going TO the satellite (Node 1)
         if (header->dst_node == 1) {
-            
-            // 1. Block Debug and Diagnostic ports entirely from external nodes
             if (header->dst_port == PORT_DBG || header->dst_port == PORT_DIAG) {
                 printf("  [Policy] REJECTED: Access to Debug/Diag ports (Port %d) is blocked from external nodes\n", header->dst_port);
                 return false;
             }
 
-            // 2. Restrict Telecommand, File, and Repeater ports to Node 10 only
             if (header->dst_port == PORT_TC || header->dst_port == PORT_FILE || 
                 header->dst_port == PORT_RPT || header->dst_port == PORT_CMD) {
                 if (header->src_node != 10) {
                     printf("  [Policy] REJECTED: Node %d unauthorized for functional port %d\n", header->src_node, header->dst_port);
                     return false;
+                }
+            }
+        }
+    }
+
+    // --- PAYLOAD-LEVEL POLICY (Deep Packet Inspection) ---
+    const char* payload_policy_env = getenv("PAYLOAD_POLICY_ENABLED");
+    if (payload_policy_env != NULL && strcmp(payload_policy_env, "1") == 0) {
+        // Only inspect payloads going to command ports (10 or 12)
+        if (header->dst_node == 1 && (header->dst_port == PORT_TC || header->dst_port == PORT_CMD)) {
+            if (payload != NULL && payload_len > 0) {
+                // Denylist of high-risk commands
+                const char* denylist[] = {
+                    "obc_system", // Can execute shell commands
+                    "obc_reset",  // Reboots the system
+                    "obc_exit",   // Shuts down the software
+                    "obc_rm",     // Deletes files
+                    "obc_mkdir"   // Modifies directory structure
+                };
+                int num_rules = sizeof(denylist) / sizeof(denylist[0]);
+
+                for (int i = 0; i < num_rules; i++) {
+                    // Check if the denied string exists anywhere in the payload
+                    if (strstr((const char*)payload, denylist[i]) != NULL) {
+                        printf("  [Policy] REJECTED: High-risk command '%s' detected in payload!\n", denylist[i]);
+                        return false;
+                    }
                 }
             }
         }

@@ -41,6 +41,17 @@ function start_system() {
         export PORT_POLICY_ENABLED=0
         echo -e "${RED}Port Policy DISABLED${NC}"
     fi
+
+    # Ask for payload policy preference
+    echo -n "Enable Payload-Level Security Policy? (Blocks high-risk commands) [y/N]: "
+    read -r response
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        export PAYLOAD_POLICY_ENABLED=1
+        echo -e "${GREEN}Payload Policy ENABLED${NC}"
+    else
+        export PAYLOAD_POLICY_ENABLED=0
+        echo -e "${RED}Payload Policy DISABLED${NC}"
+    fi
     
     echo -e "${GREEN}Starting CSP Firewall Network...${NC}"
     $COMPOSE_CMD up -d --build

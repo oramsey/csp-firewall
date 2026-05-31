@@ -32,7 +32,11 @@ void process_packet(void *pub_a, void *pub_b, zmq_msg_t *msg, direction_t dir) {
     printf("[Core] Incoming: Src: %d, Dst: %d, DPort: %d, SPort: %d, Prio: %d (%s)\n", 
            header.src_node, header.dst_node, header.dst_port, header.src_port, header.prio, dir_str);
 
-    if (is_allowed(&header)) {
+    // Deep Packet Inspection: Payload starts after MAC (1 byte) and CSP Header (4 bytes)
+    const uint8_t *payload = (size > 5) ? &data[5] : NULL;
+    size_t payload_len = (size > 5) ? (size - 5) : 0;
+
+    if (is_allowed(&header, payload, payload_len)) {
         forward_packet(pub_a, pub_b, msg, dir);
     } else {
         drop_packet(&header);
