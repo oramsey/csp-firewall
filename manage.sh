@@ -28,7 +28,18 @@ function start_system() {
         echo -e "${GREEN}Policy ENABLED${NC}"
     else
         export NODE_POLICY_ENABLED=0
-        echo -e "${RED}Policy DISABLED${NC}"
+        echo -e "${RED}Node Policy DISABLED${NC}"
+    fi
+
+    # Ask for port policy preference
+    echo -n "Enable Port-Level Security Policy? (Blocks Debug/Restricts TC) [y/N]: "
+    read -r response
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        export PORT_POLICY_ENABLED=1
+        echo -e "${GREEN}Port Policy ENABLED${NC}"
+    else
+        export PORT_POLICY_ENABLED=0
+        echo -e "${RED}Port Policy DISABLED${NC}"
     fi
     
     echo -e "${GREEN}Starting CSP Firewall Network...${NC}"

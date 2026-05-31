@@ -22,7 +22,7 @@ COPY libcsp-gs /suchai/src/lib/libcsp
 # Build the ground node (Node 10)
 # We use the 'simple' app as the ground node
 RUN rm -rf build && \
-    cmake -B build -DAPP=simple -DSCH_COMM_NODE=10 && \
+    cmake -B build -DAPP=simple -DSCH_COMM_NODE=10 -DSCH_LOG=WARN -DSCH_WDT_PERIOD_MS=9999999 && \
     cmake --build build
 
 # Copy the entrypoint script

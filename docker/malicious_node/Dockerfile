@@ -23,6 +23,8 @@ COPY libcsp-gs /suchai/src/lib/libcsp
 RUN rm -rf build && \
     cmake -B build -DAPP=simple \
     -DSCH_COMM_NODE=11 \
+    -DSCH_LOG=WARN \
+    -DSCH_WDT_PERIOD_MS=9999999 \
     -DSCH_COMM_ZMQ_IN="\"tcp://ground-node-a:8001\"" \
     -DSCH_COMM_ZMQ_OUT="\"tcp://ground-node-a:8002\"" && \
     cmake --build build

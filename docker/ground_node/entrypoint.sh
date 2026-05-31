@@ -17,7 +17,7 @@ echo "Ensuring build is up to date..."
 cd /suchai
 # Only configure if build folder doesn't exist, then build
 if [ ! -d "build" ]; then
-    cmake -B build -DAPP=simple -DSCH_COMM_NODE=10
+    cmake -B build -DAPP=simple -DSCH_COMM_NODE=10 -DSCH_LOG=WARN -DSCH_WDT_PERIOD_MS=9999999
 fi
 cmake --build build
 

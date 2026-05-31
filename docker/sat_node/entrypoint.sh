@@ -14,7 +14,7 @@ sleep 2
 echo "Ensuring build is up to date..."
 cd /suchai
 if [ ! -d "build" ]; then
-    cmake -B build -DAPP=simple -DSCH_COMM_NODE=1
+    cmake -B build -DAPP=simple -DSCH_COMM_NODE=1 -DSCH_LOG=WARN -DSCH_WDT_PERIOD_MS=9999999
 fi
 cmake --build build
 
