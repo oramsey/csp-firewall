@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["firewall", "nodes", "rules", "commands"],
+  "properties": {
+    "firewall": {
+      "type": "object",
+      "required": ["default_action"],
+      "properties": {
+        "default_action": { "enum": ["allow", "drop"] }
+      }
+    },
+    "nodes": {
+      "type": "object",
+      "properties": {
+        "ground": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name"],
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" }
+            }
+          }
+        },
+        "space": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name"],
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "action", "src", "dst", "direction"],
+        "properties": {
+          "name": { "type": "string" },
+          "action": { "enum": ["allow", "drop"] },
+          "src": { "type": "string" },
+          "dst": { "type": "string" },
+          "dport": { "type": "integer" },
+          "direction": { "enum": ["ground_to_space", "space_to_ground"] }
+        }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "dport", "match", "allowed_sources"],
+        "properties": {
+          "name": { "type": "string" },
+          "dport": { "type": "integer" },
+          "match": {
+            "type": "object",
+            "required": ["offset", "value_hex"],
+            "properties": {
+              "offset": { "type": "integer" },
+              "value_hex": { "type": "string", "pattern": "^[0-9a-fA-F]+$" }
+            }
+          },
+          "allowed_sources": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

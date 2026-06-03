@@ -16,19 +16,7 @@ function clean_zombies() {
 function start_system() {
     clean_zombies
 
-    echo -n "Enable Node-Level Security Policy? [y/N]: "
-    read -r response
-    [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] && export NODE_POLICY_ENABLED=1 || export NODE_POLICY_ENABLED=0
-
-    echo -n "Enable Port-Level Security Policy? [y/N]: "
-    read -r response
-    [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] && export PORT_POLICY_ENABLED=1 || export PORT_POLICY_ENABLED=0
-
-    echo -n "Enable Payload-Level Security Policy? [y/N]: "
-    read -r response
-    [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] && export PAYLOAD_POLICY_ENABLED=1 || export PAYLOAD_POLICY_ENABLED=0
-    
-    echo -e "${GREEN}Starting CSP Firewall Network...${NC}"
+    echo -e "${GREEN}Starting CSP Firewall Network with YAML Policy Engine...${NC}"
     $COMPOSE_CMD up -d --build --force-recreate
 
     echo -e "${GREEN}System is running!${NC}"

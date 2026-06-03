@@ -3,49 +3,65 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PORT_TC 10
-#define PORT_CMD 12
-#define PORT_DBG 13
-#define PORT_DIAG 14
+// Include the auto-generated rules from the YAML config
+#include "policy_data.h"
 
 bool is_allowed(firewall_header_t *header, const uint8_t *payload, size_t payload_len) {
     if (!header) return false;
 
-    // Node Policy
-    const char* node_env = getenv("NODE_POLICY_ENABLED");
-    if (node_env && strcmp(node_env, "1") == 0) {
-        if (header->dst_node == 1 && header->src_node != 10) {
-            printf("  [Policy] REJECTED: Node %d unauthorized for satellite access\n", header->src_node);
-            fflush(stdout);
-            return false;
-        }
-    }
+    // Default action fallback
+    bool allowed = (POLICY_DEFAULT_DROP == 0); 
+    
+    // Determine traffic direction
+    uint8_t current_dir = (header->dst_node == ID_SATELLITE_OBC) ? DIR_G2S : DIR_S2G;
 
-    // Port Policy
-    const char* port_env = getenv("PORT_POLICY_ENABLED");
-    if (port_env && strcmp(port_env, "1") == 0) {
-        if (header->dst_node == 1) {
-            if (header->dst_port == PORT_DBG || header->dst_port == PORT_DIAG) {
-                printf("  [Policy] REJECTED: Port %d blocked\n", header->dst_port);
+    // --- 1. Evaluate Standard Rules (Node & Port Level) ---
+    bool matched_rule = false;
+    for (int i = 0; i < NUM_RULES; i++) {
+        if ((rules[i].src == header->src_node || rules[i].src == 255) &&
+            (rules[i].dst == header->dst_node || rules[i].dst == 255) &&
+            (rules[i].dport == header->dst_port || rules[i].dport == 255) &&
+            (rules[i].dir == current_dir)) {
+            
+            allowed = (rules[i].action == ACTION_ALLOW);
+            matched_rule = true;
+            
+            if (!allowed) {
+                printf("  [Policy] REJECTED by Rule #%d\n", i);
                 fflush(stdout);
                 return false;
             }
         }
     }
 
-    // Payload Policy
-    const char* payload_env = getenv("PAYLOAD_POLICY_ENABLED");
-    if (payload_env && strcmp(payload_env, "1") == 0) {
-        if (header->dst_node == 1 && (header->dst_port == PORT_TC || header->dst_port == PORT_CMD)) {
-            const char* deny[] = {"obc_reset", "obc_system", "obc_exit"};
-            for (int i = 0; i < 3; i++) {
-                if (payload && strstr((const char*)payload, deny[i])) {
-                    printf("  [Policy] REJECTED: Command '%s' blocked\n", deny[i]);
-                    fflush(stdout);
-                    return false;
+    if (!matched_rule && POLICY_DEFAULT_DROP) {
+        printf("  [Policy] REJECTED by Default Drop Policy\n");
+        fflush(stdout);
+        return false;
+    }
+
+    // --- 2. Evaluate Payload Rules (Deep Packet Inspection) ---
+    if (payload != NULL && payload_len > 0) {
+        for (int i = 0; i < NUM_CMDS; i++) {
+            if (header->dst_port == cmd_rules[i].dport) {
+                
+                // Check if the payload is long enough to contain the match at the offset
+                if (payload_len >= cmd_rules[i].offset + cmd_rules[i].len) {
+                    
+                    // Compare the bytes
+                    if (memcmp(&payload[cmd_rules[i].offset], cmd_rules[i].match, cmd_rules[i].len) == 0) {
+                        
+                        // Command matched! Check if source is allowed
+                        if (header->src_node != cmd_rules[i].allowed_src && cmd_rules[i].allowed_src != 255) {
+                            printf("  [Policy] REJECTED: Node %d attempted unauthorized restricted command!\n", header->src_node);
+                            fflush(stdout);
+                            return false;
+                        }
+                    }
                 }
             }
         }
     }
-    return true;
+
+    return allowed;
 }

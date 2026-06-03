@@ -1,0 +1,60 @@
+firewall:
+  default_action: drop
+
+nodes:
+  ground:
+    - id: 10
+      name: ground_station
+    - id: 11
+      name: malicious_node
+    - id: 2
+      name: operator_console
+
+  space:
+    - id: 1
+      name: satellite_obc
+    - id: 21
+      name: eps
+
+rules:
+  # Standard Connectivity
+  - name: allow_ground_to_obc_ping
+    action: allow
+    src: ground_station
+    dst: satellite_obc
+    dport: 1
+    direction: ground_to_space
+
+  # Telecommand Access (Trusted Node Only)
+  - name: allow_telecommand
+    action: allow
+    src: ground_station
+    dst: satellite_obc
+    dport: 10
+    direction: ground_to_space
+
+  # Command Console Access (Trusted Node Only)
+  - name: allow_console_cmds
+    action: allow
+    src: ground_station
+    dst: satellite_obc
+    dport: 12
+    direction: ground_to_space
+
+  # Telemetry Downlink
+  - name: allow_telemetry_downlink
+    action: allow
+    src: satellite_obc
+    dst: ground_station
+    direction: space_to_ground
+
+commands:
+  - name: reboot
+    dport: 10
+    match:
+      offset: 0
+      # In SUCHAI, commands are often strings. 
+      # This matches the first few bytes of "obc_reset"
+      value_hex: "6f62635f7265736574" 
+    allowed_sources:
+      - operator_console
