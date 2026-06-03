@@ -1,21 +1,27 @@
 #include "enforcement.h"
 #include <stdio.h>
+#include <csp/csp.h>
 
-void forward_packet(void *pub_a, void *pub_b, zmq_msg_t *msg, direction_t dir) {
-    int rc;
-    if (dir == A_TO_B) {
-        rc = zmq_msg_send(msg, pub_b, 0);
-        if (rc != -1) printf("  [Enforcement] FORWARDED to Network B (Space)\n");
+// Forward declaration of internal libcsp function
+extern int csp_send_direct(csp_id_t idout, csp_packet_t * packet, const csp_route_t * ifroute, uint32_t timeout);
+
+void enforce_policy(bool allowed, csp_iface_t *if_out, csp_packet_t *packet, uint8_t via) {
+    if (allowed && if_out != NULL) {
+        printf("  [Enforcement] ALLOWED: Transmitting via '%s'\n", if_out->name);
+        fflush(stdout);
+        
+        // Construct a temporary route for this specific packet
+        csp_route_t route;
+        route.iface = if_out;
+        route.via = via;
+
+        if (csp_send_direct(packet->id, packet, &route, 0) != CSP_ERR_NONE) {
+            printf("  [Enforcement] ERROR: Physical transmission failed\n");
+            csp_buffer_free(packet);
+        }
     } else {
-        rc = zmq_msg_send(msg, pub_a, 0);
-        if (rc != -1) printf("  [Enforcement] FORWARDED to Network A (Ground)\n");
+        printf("  [Enforcement] DROPPED: Security policy violation\n");
+        fflush(stdout);
+        csp_buffer_free(packet);
     }
-    
-    if (rc == -1) {
-        zmq_msg_close(msg); // Close if send failed
-    }
-}
-
-void drop_packet(csp_header_t *header) {
-    printf("  [Enforcement] DROPPED: Src: %d, Dst: %d\n", header->src_node, header->dst_node);
 }

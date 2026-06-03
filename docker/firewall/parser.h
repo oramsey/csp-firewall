@@ -1,20 +1,9 @@
 #ifndef PARSER_H
 #define PARSER_H
-
-#include <stdint.h>
+#include <csp/csp.h>
 #include <stdbool.h>
-#include <stddef.h>
-
 typedef struct {
-    uint8_t prio;
-    uint8_t src_node;
-    uint8_t dst_node;
-    uint8_t dst_port;
-    uint8_t src_port;
-    uint8_t flags;
-    bool valid;
-} csp_header_t;
-
-csp_header_t parse_packet(const uint8_t *data, size_t len);
-
+    uint8_t prio, src_node, dst_node, dst_port, src_port, flags;
+} firewall_header_t;
+firewall_header_t parse_csp_packet(csp_packet_t *packet);
 #endif

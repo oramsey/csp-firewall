@@ -1,38 +1,29 @@
-# Use the official Ubuntu 24.04 image as the base
-FROM ubuntu:24.04
+# Use the stable Ubuntu 22.04
+FROM ubuntu:22.04
 
 LABEL maintainer="SPEL"
+# Cache Buster: v2
 
-# Install build tools and dependencies
+# Install dependencies
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
-    gcc make cmake libzmq3-dev python3 python3-pip python3-zmq pkg-config libcunit1-dev libsqlite3-dev git && \
+    gcc make cmake libzmq3-dev python3 python3-zmq python-is-python3 pkg-config libcunit1-dev libsqlite3-dev git && \
     apt autoremove -y && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt clean && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory inside the container
 WORKDIR /suchai
 
-# Copy the flight software source
-# Note: This assumes the build context is the project root
+# Copy flight software only
 COPY suchai-flight-software-v2 /suchai
-COPY libcsp-gs /suchai/src/lib/libcsp
 
-# Build the Satellite node (Node 1)
-# We use the 'simple' app as the satellite node
+# Build satellite node (Node 1)
 RUN rm -rf build && \
-    cmake -B build -DAPP=simple -DSCH_COMM_NODE=1 -DSCH_LOG=WARN -DSCH_WDT_PERIOD_MS=9999999 && \
+    rm -rf src/lib/libcsp/.lock-waf* && \
+    cmake -B build -DDOCKER_BUILD=1 -DAPP=simple -DSCH_COMM_NODE=1 -DSCH_LOG=WARN -DSCH_WDT_PERIOD_MS=9999999 && \
     cmake --build build
 
-# Copy the entrypoint script
 COPY docker/sat_node/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Expose ZMQ Hub ports
-# Port 8001: XPUB (SUB)
-# Port 8002: XSUB (PUB)
-# Port 8003: Monitor
 EXPOSE 8001 8002 8003
-
 ENTRYPOINT ["/entrypoint.sh"]

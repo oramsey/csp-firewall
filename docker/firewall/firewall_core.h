@@ -1,9 +1,15 @@
 #ifndef FIREWALL_CORE_H
 #define FIREWALL_CORE_H
 
-#include <zmq.h>
-#include "enforcement.h"
+#include <csp/csp.h>
 
-void process_packet(void *pub_a, void *pub_b, zmq_msg_t *msg, direction_t dir);
+void firewall_init(void);
+
+/* 
+ * The Core now handles explicit packet processing.
+ * It takes the two interfaces it's bridging and the packet to evaluate.
+ */
+void process_packet(csp_iface_t *ground_if, csp_iface_t *space_if, 
+                    csp_iface_t *input_if, csp_packet_t *packet);
 
 #endif

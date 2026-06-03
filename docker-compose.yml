@@ -5,10 +5,6 @@ services:
       context: .
       dockerfile: docker/ground_node/Dockerfile
     container_name: ground-node-a
-    volumes:
-      - ./suchai-flight-software-v2:/suchai
-      - ./libcsp-gs:/suchai/src/lib/libcsp
-      - ground-build:/suchai/build
     networks:
       - ground-net
     stdin_open: true
@@ -21,10 +17,6 @@ services:
     container_name: malicious-node
     depends_on:
       - ground-node-a
-    volumes:
-      - ./suchai-flight-software-v2:/suchai
-      - ./libcsp-gs:/suchai/src/lib/libcsp
-      - malicious-build:/suchai/build
     networks:
       - ground-net
     stdin_open: true
@@ -33,11 +25,9 @@ services:
   # The Bridge: CSP Firewall
   firewall:
     build:
-      context: ./docker/firewall
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/firewall/Dockerfile
     container_name: firewall
-    volumes:
-      - ./docker/firewall:/app
     environment:
       - HUB_A_IP=ground-node-a
       - HUB_B_IP=sat-node-b
@@ -57,10 +47,6 @@ services:
       context: .
       dockerfile: docker/sat_node/Dockerfile
     container_name: sat-node-b
-    volumes:
-      - ./suchai-flight-software-v2:/suchai
-      - ./libcsp-gs:/suchai/src/lib/libcsp
-      - sat-build:/suchai/build
     networks:
       - sat-net
     stdin_open: true
@@ -71,8 +57,3 @@ networks:
     driver: bridge
   sat-net:
     driver: bridge
-
-volumes:
-  ground-build:
-  malicious-build:
-  sat-build:

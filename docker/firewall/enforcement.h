@@ -1,15 +1,9 @@
 #ifndef ENFORCEMENT_H
 #define ENFORCEMENT_H
 
-#include <zmq.h>
-#include "parser.h"
+#include <csp/csp.h>
+#include <stdbool.h>
 
-typedef enum {
-    A_TO_B,
-    B_TO_A
-} direction_t;
-
-void forward_packet(void *pub_a, void *pub_b, zmq_msg_t *msg, direction_t dir);
-void drop_packet(csp_header_t *header);
+void enforce_policy(bool allowed, csp_iface_t *if_out, csp_packet_t *packet, uint8_t via);
 
 #endif

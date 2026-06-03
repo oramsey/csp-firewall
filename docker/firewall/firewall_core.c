@@ -1,47 +1,65 @@
 #include "firewall_core.h"
 #include "parser.h"
 #include "policy_engine.h"
+#include "enforcement.h"
 #include <stdio.h>
+#include <string.h>
 
-void process_packet(void *pub_a, void *pub_b, zmq_msg_t *msg, direction_t dir) {
-    size_t size = zmq_msg_size(msg);
-    const uint8_t *data = (const uint8_t *)zmq_msg_data(msg);
-    
-    csp_header_t header = parse_packet(data, size);
-    
-    if (!header.valid) {
-        zmq_msg_close(msg);
+// GomSpace ZMQhub internal structure to get the 'via' address
+typedef struct {
+    uint8_t via;
+    uint8_t padding[CSP_PADDING_BYTES - sizeof(uint8_t)];
+    uint16_t length;
+    csp_id_t id;
+} zmqhub_packet_t;
+
+void firewall_init(void) {
+    printf("Firewall Core Active (Explicit Interception Mode).\n");
+    fflush(stdout);
+}
+
+void process_packet(csp_iface_t *ground_if, csp_iface_t *space_if, 
+                    csp_iface_t *input_if, csp_packet_t *packet) {
+    if (!packet || !input_if) return;
+
+    firewall_header_t h = parse_csp_packet(packet);
+    csp_iface_t *output_if = NULL;
+    const char *direction_str = "Unknown";
+
+    // 1. Determine Direction and Output Interface
+    if (input_if == ground_if) {
+        output_if = space_if;
+        direction_str = "GROUND -> SPACE";
+    } else if (input_if == space_if) {
+        output_if = ground_if;
+        direction_str = "SPACE -> GROUND";
+    }
+
+    // 2. Loop Prevention (Only forward if it's cross-segment traffic)
+    bool should_forward = false;
+    if (input_if == ground_if && h.dst_node == 1) {
+        should_forward = true;
+    } else if (input_if == space_if && (h.dst_node == 10 || h.dst_node == 11)) {
+        should_forward = true;
+    }
+
+    if (!should_forward) {
+        csp_buffer_free(packet);
         return;
     }
 
-    // --- ROUTING LOGIC ---
-    if (dir == A_TO_B) {
-        if (header.dst_node != 1) { // Not space node
-            zmq_msg_close(msg);
-            return;
-        }
-    } else if (dir == B_TO_A) {
-        if (header.dst_node != 10 && header.dst_node != 11) { // Not ground nodes
-            zmq_msg_close(msg);
-            return;
-        }
-    }
-    // ---------------------
+    printf("[Core] %s: %d -> %d (Port %d)\n", direction_str, h.src_node, h.dst_node, h.dst_port);
+    fflush(stdout);
 
-    const char *dir_str = (dir == A_TO_B) ? "A_TO_B" : "B_TO_A";
-    printf("[Core] Incoming: Src: %d, Dst: %d, DPort: %d, SPort: %d, Prio: %d (%s)\n", 
-           header.src_node, header.dst_node, header.dst_port, header.src_port, header.prio, dir_str);
+    // 3. Extract 'via' address (Critical for ZMQ to work)
+    uint8_t via = ((zmqhub_packet_t *)packet)->via;
 
-    // Deep Packet Inspection: Payload starts after MAC (1 byte) and CSP Header (4 bytes)
-    const uint8_t *payload = (size > 5) ? &data[5] : NULL;
-    size_t payload_len = (size > 5) ? (size - 5) : 0;
-
-    if (is_allowed(&header, payload, payload_len)) {
-        forward_packet(pub_a, pub_b, msg, dir);
-    } else {
-        drop_packet(&header);
-        zmq_msg_close(msg); // Dropped, we must close it
-    }
+    // 4. Evaluate Security Policy
+    bool allowed = is_allowed(&h, packet->data, packet->length);
+    
+    // 5. Enforce the decision
+    enforce_policy(allowed, output_if, packet, via);
     
     printf("------------------------------\n");
+    fflush(stdout);
 }

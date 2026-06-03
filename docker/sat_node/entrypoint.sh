@@ -1,22 +1,10 @@
 #!/bin/bash
-
-# Start ZMQ Hub B in the background
-# Hub B represents the space segment network
+# Start ZMQ Hub B
 echo "Starting ZMQ Hub B..."
 cd /suchai/scripts/csp_zmq
 python3 zmqhub.py --mon &
-cd /suchai
-
-# Wait for the hub to initialize
 sleep 2
-
-# Start Satellite Node (Node 1)
-echo "Ensuring build is up to date..."
-cd /suchai
-if [ ! -d "build" ]; then
-    cmake -B build -DAPP=simple -DSCH_COMM_NODE=1 -DSCH_LOG=WARN -DSCH_WDT_PERIOD_MS=9999999
-fi
-cmake --build build
-
+# Launch Flight Software as PID 1
+echo "Starting Satellite Node..."
 cd /suchai/build/apps/simple
 exec ./suchai-app
