@@ -2,12 +2,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // Include the auto-generated rules from the YAML config
 #include "policy_data.h"
 
+// State for Anti-Flooding (Rate Limiting)
+static int packet_counts[32] = {0};
+static time_t window_starts[32] = {0};
+
 bool is_allowed(firewall_header_t *header, const uint8_t *payload, size_t payload_len) {
     if (!header) return false;
+
+    // --- 0. Anti-Flooding Policy (Rate Limiting) ---
+    #if POLICY_RATE_LIMIT > 0
+    if (header->src_node < 32) {
+        time_t now = time(NULL);
+        // Reset the window if it has expired
+        if (now - window_starts[header->src_node] >= POLICY_RATE_WINDOW) {
+            window_starts[header->src_node] = now;
+            packet_counts[header->src_node] = 0;
+        }
+        // Check if the node has exceeded the limit
+        if (packet_counts[header->src_node] >= POLICY_RATE_LIMIT) {
+            printf("  [Policy] REJECTED: Rate limit exceeded for Node %d (> %d pkts / %ds)\n", 
+                   header->src_node, POLICY_RATE_LIMIT, POLICY_RATE_WINDOW);
+            fflush(stdout);
+            return false;
+        }
+        // Increment the packet count for this node
+        packet_counts[header->src_node]++;
+    }
+    #endif
 
     // Default action fallback
     bool allowed = (POLICY_DEFAULT_DROP == 0); 

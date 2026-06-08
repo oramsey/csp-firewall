@@ -1,5 +1,7 @@
 firewall:
   default_action: drop
+  rate_limit: 5
+  rate_window: 60
 
 nodes:
   ground:

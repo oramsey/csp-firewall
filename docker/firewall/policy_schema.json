@@ -7,7 +7,9 @@
       "type": "object",
       "required": ["default_action"],
       "properties": {
-        "default_action": { "enum": ["allow", "drop"] }
+        "default_action": { "enum": ["allow", "drop"] },
+        "rate_limit": { "type": "integer" },
+        "rate_window": { "type": "integer" }
       }
     },
     "nodes": {

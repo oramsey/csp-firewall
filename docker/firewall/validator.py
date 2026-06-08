@@ -12,9 +12,14 @@ def generate_c_data(artifact):
         f.write("/* AUTO-GENERATED POLICY DATA - DO NOT EDIT */\n")
         f.write("#ifndef POLICY_DATA_H\n#define POLICY_DATA_H\n\n")
         
-        # 1. Default Action
+        # 1. Default Action & Rate Limiting
         default_drop = 1 if artifact['firewall']['default_action'] == 'drop' else 0
-        f.write(f"#define POLICY_DEFAULT_DROP {default_drop}\n\n")
+        f.write(f"#define POLICY_DEFAULT_DROP {default_drop}\n")
+
+        rate_limit = artifact['firewall'].get('rate_limit', 0)
+        rate_window = artifact['firewall'].get('rate_window', 60)
+        f.write(f"#define POLICY_RATE_LIMIT {rate_limit}\n")
+        f.write(f"#define POLICY_RATE_WINDOW {rate_window}\n\n")
 
         # 2. Node Mappings
         node_map = {}
