@@ -1,0 +1,4 @@
+# requirements.txt for the python predictor script
+skyfield>=1.46
+numpy>=1.26
+scipy>=1.11

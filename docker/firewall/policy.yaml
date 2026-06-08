@@ -29,7 +29,7 @@ rules:
 
   # Telecommand Access (Trusted Node Only)
   - name: allow_telecommand
-    action: allow
+    action: drop # MISSION_POLICY_TC
     src: ground_station
     dst: satellite_obc
     dport: 10

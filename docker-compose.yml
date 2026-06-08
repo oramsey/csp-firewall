@@ -28,6 +28,8 @@ services:
       context: .
       dockerfile: docker/firewall/Dockerfile
     container_name: firewall
+    volumes:
+      - ./docker/firewall/policy.yaml:/app/policy.yaml
     environment:
       - HUB_A_IP=ground-node-a
       - HUB_B_IP=sat-node-b
