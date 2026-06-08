@@ -27,7 +27,7 @@ bool is_allowed(firewall_header_t *header, const uint8_t *payload, size_t payloa
             matched_rule = true;
             
             if (!allowed) {
-                printf("  [Policy] REJECTED by Rule #%d\n", i);
+                printf("  [Policy] REJECTED by Rule #%d (Port %d blocked)\n", i, header->dst_port);
                 fflush(stdout);
                 return false;
             }

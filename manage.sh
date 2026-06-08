@@ -16,10 +16,11 @@ function clean_zombies() {
 function start_system() {
     clean_zombies
 
-    echo -e "${GREEN}Starting CSP Firewall Network with YAML Policy Engine...${NC}"
+    echo -e "${GREEN}Starting CSP Firewall Network (Controlled by policy.yaml)...${NC}"
     $COMPOSE_CMD up -d --build --force-recreate
 
     echo -e "${GREEN}System is running!${NC}"
+
     echo "------------------------------------------------"
     echo "Terminal commands to interact:"
     echo "  Ground Node: sudo docker attach ground-node-a"

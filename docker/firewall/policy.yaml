@@ -48,6 +48,21 @@ rules:
     dst: ground_station
     direction: space_to_ground
 
+  # Explicit Blocks for Restricted Ports
+  - name: block_debug_port
+    action: drop
+    src: any
+    dst: any
+    dport: 13
+    direction: ground_to_space
+
+  - name: block_diagnostic_port
+    action: drop
+    src: any
+    dst: any
+    dport: 14
+    direction: ground_to_space
+
 commands:
   - name: reboot
     dport: 10
