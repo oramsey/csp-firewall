@@ -54,7 +54,10 @@ def generate_c_data(artifact):
             
             # Map the allowed source name to its ID
             allowed_src_name = c.get('allowed_sources', ['any'])[0]
-            allowed_src = node_map.get(allowed_src_name, 255) if allowed_src_name != 'any' else 255
+            if allowed_src_name == 'none':
+                allowed_src = 254 # 254 means nobody is allowed
+            else:
+                allowed_src = node_map.get(allowed_src_name, 255) if allowed_src_name != 'any' else 255
             
             f.write(f"    {{ {c['dport']}, {c['match']['offset']}, {len(val)}, {allowed_src}, {{ {val_str} }} }}, // {c['name']}\n")
         f.write("};\n\n")

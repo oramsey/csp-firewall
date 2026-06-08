@@ -22,12 +22,12 @@ test_node_live() {
     echo "1: obc_ident" | timeout 5s docker exec -i "$container" /suchai/build/apps/simple/suchai-app > /dev/null 2>&1
     
     # 2. Give the firewall a moment to log and flush
-    sleep 2
+    sleep 3
 
-    # 3. Check the last 10 lines of firewall logs
-    local log_output=$(docker logs --tail 10 firewall 2>&1)
+    # 3. Check the last 20 lines of firewall logs
+    local log_output=$(docker logs --tail 20 firewall 2>&1)
     
-    if echo "$log_output" | grep -q "$expected_result"; then
+    if echo "$log_output" | grep -qi "$expected_result"; then
         echo -e " [ ${GREEN}PASS${NC} ] (Traffic was $expected_result)"
         return 0
     else

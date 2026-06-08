@@ -50,6 +50,14 @@ rules:
     dst: ground_station
     direction: space_to_ground
 
+  # Allow CMP traffic to reach payload inspection
+  - name: allow_cmp_traffic
+    action: allow
+    src: ground_station
+    dst: satellite_obc
+    dport: 0
+    direction: ground_to_space
+
   # Explicit Blocks for Restricted Ports
   - name: block_debug_port
     action: drop
@@ -75,3 +83,12 @@ commands:
       value_hex: "6f62635f7265736574" 
     allowed_sources:
       - operator_console
+
+  - name: route_set
+    dport: 0
+    match:
+      offset: 0
+      # CMP Request (0x00) followed by ROUTE_SET code (0x02)
+      value_hex: "0002"
+    allowed_sources:
+      - none
