@@ -89,6 +89,14 @@ rules:
     dport: 14
     direction: ground_to_space
 
+  # Block CSP Management Services
+  - name: block_csp_ps
+    action: drop
+    src: any
+    dst: any
+    dport: 2
+    direction: ground_to_space
+
 commands:
   - name: reboot
     dport: 10
