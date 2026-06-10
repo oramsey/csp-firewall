@@ -162,3 +162,12 @@ commands:
       value_hex: "0003"
     allowed_sources:
       - none
+
+  - name: cmp_peek
+    dport: 0
+    match:
+      offset: 0
+      # CMP Request (0x00) followed by PEEK code (0x04)
+      value_hex: "0004"
+    allowed_sources:
+      - none
