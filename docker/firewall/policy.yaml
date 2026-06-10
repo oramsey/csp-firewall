@@ -171,3 +171,12 @@ commands:
       value_hex: "0004"
     allowed_sources:
       - none
+
+  - name: cmp_poke
+    dport: 0
+    match:
+      offset: 0
+      # CMP Request (0x00) followed by POKE code (0x05)
+      value_hex: "0005"
+    allowed_sources:
+      - none
