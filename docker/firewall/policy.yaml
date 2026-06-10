@@ -180,3 +180,12 @@ commands:
       value_hex: "0005"
     allowed_sources:
       - none
+
+  - name: cmp_clock
+    dport: 0
+    match:
+      offset: 0
+      # CMP Request (0x00) followed by CLOCK code (0x06)
+      value_hex: "0006"
+    allowed_sources:
+      - none
