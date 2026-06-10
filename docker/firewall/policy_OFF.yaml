@@ -1,0 +1,32 @@
+firewall:
+  default_action: allow # Open the gate!
+  rate_limit: 0
+  rate_window: 60
+
+nodes:
+  ground:
+    - id: 10
+      name: ground_station
+    - id: 11
+      name: malicious_node
+    - id: 3
+      name: operator_console
+
+  space:
+    - id: 1
+      name: satellite_obc
+    - id: 2
+      name: payload_node
+    - id: 21
+      name: eps
+
+rules:
+  # No rules needed, default is allow
+  - name: dummy_rule
+    action: allow
+    src: ground_station
+    dst: satellite_obc
+    dport: 10
+    direction: ground_to_space
+
+commands: []
