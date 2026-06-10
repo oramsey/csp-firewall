@@ -153,3 +153,12 @@ commands:
       value_hex: "0001"
     allowed_sources:
       - none
+
+  - name: cmp_if_stats
+    dport: 0
+    match:
+      offset: 0
+      # CMP Request (0x00) followed by IF_STATS code (0x03)
+      value_hex: "0003"
+    allowed_sources:
+      - none
