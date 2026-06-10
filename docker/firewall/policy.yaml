@@ -97,6 +97,13 @@ rules:
     dport: 2
     direction: ground_to_space
 
+  - name: block_csp_memfree
+    action: drop
+    src: any
+    dst: any
+    dport: 3
+    direction: ground_to_space
+
 commands:
   - name: reboot
     dport: 10
