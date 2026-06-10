@@ -51,6 +51,16 @@ services:
     stdin_open: true
     tty: true
 
+  payload-node:
+    build:
+      context: .
+      dockerfile: docker/payload_node/Dockerfile
+    container_name: payload-node
+    networks:
+      - sat-net
+    stdin_open: true
+    tty: true
+
 networks:
   ground-net:
     driver: bridge

@@ -37,9 +37,9 @@ void process_packet(csp_iface_t *ground_if, csp_iface_t *space_if,
 
     // 2. Loop Prevention (Only forward if it's cross-segment traffic)
     bool should_forward = false;
-    if (input_if == ground_if && h.dst_node == 1) {
+    if (input_if == ground_if && (h.dst_node == 1 || h.dst_node == 2)) {
         should_forward = true;
-    } else if (input_if == space_if && (h.dst_node == 10 || h.dst_node == 11)) {
+    } else if (input_if == space_if && (h.dst_node == 10 || h.dst_node == 11 || h.dst_node == 3)) {
         should_forward = true;
     }
 

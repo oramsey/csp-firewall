@@ -9,12 +9,14 @@ nodes:
       name: ground_station
     - id: 11
       name: malicious_node
-    - id: 2
+    - id: 3
       name: operator_console
 
   space:
     - id: 1
       name: satellite_obc
+    - id: 2
+      name: payload_node
     - id: 21
       name: eps
 
@@ -29,7 +31,7 @@ rules:
 
   # Telecommand Access (Trusted Node Only)
   - name: allow_telecommand
-    action: drop # MISSION_POLICY_TC
+    action: allow # MISSION_POLICY_TC
     src: ground_station
     dst: satellite_obc
     dport: 10
@@ -49,6 +51,20 @@ rules:
     src: satellite_obc
     dst: ground_station
     direction: space_to_ground
+
+  - name: allow_payload_telemetry
+    action: allow
+    src: payload_node
+    dst: ground_station
+    direction: space_to_ground
+
+  # Ground to Payload ping
+  - name: allow_ground_to_payload_ping
+    action: allow
+    src: ground_station
+    dst: payload_node
+    dport: 1
+    direction: ground_to_space
 
   # Allow CMP traffic to reach payload inspection
   - name: allow_cmp_traffic
