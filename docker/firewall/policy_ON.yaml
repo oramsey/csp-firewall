@@ -2,6 +2,7 @@ firewall:
   default_action: drop
   rate_limit: 5
   rate_window: 60
+  allowed_priorities: [2, 3] # Only Normal and Low priorities allowed
 
 nodes:
   ground:

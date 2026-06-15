@@ -9,7 +9,11 @@
       "properties": {
         "default_action": { "enum": ["allow", "drop"] },
         "rate_limit": { "type": "integer" },
-        "rate_window": { "type": "integer" }
+        "rate_window": { "type": "integer" },
+        "allowed_priorities": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 0, "maximum": 3 }
+        }
       }
     },
     "nodes": {

@@ -14,7 +14,16 @@ static time_t window_starts[32] = {0};
 bool is_allowed(firewall_header_t *header, const uint8_t *payload, size_t payload_len) {
     if (!header) return false;
 
-    // --- 0. Anti-Flooding Policy (Rate Limiting) ---
+    // --- 0. Priority Policy ---
+    #ifdef POLICY_PRIO_MASK
+    if (!((1 << header->prio) & POLICY_PRIO_MASK)) {
+        printf("  [Policy] REJECTED: Priority level %d not allowed\n", header->prio);
+        fflush(stdout);
+        return false;
+    }
+    #endif
+
+    // --- 1. Anti-Flooding Policy (Rate Limiting) ---
     #if POLICY_RATE_LIMIT > 0
     if (header->src_node < 32) {
         time_t now = time(NULL);

@@ -2,6 +2,7 @@ firewall:
   default_action: allow # Open the gate!
   rate_limit: 0
   rate_window: 60
+  allowed_priorities: [0, 1, 2, 3] # Allow all priorities
 
 nodes:
   ground:
