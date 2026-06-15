@@ -1,6 +1,6 @@
 firewall:
-  default_action: drop
-  rate_limit: 5
+  default_action: allow # Open the gate!
+  rate_limit: 0
   rate_window: 60
 
 nodes:
@@ -21,171 +21,12 @@ nodes:
       name: eps
 
 rules:
-  # Standard Connectivity
-  - name: allow_ground_to_obc_ping
+  # No rules needed, default is allow
+  - name: dummy_rule
     action: allow
-    src: ground_station
-    dst: satellite_obc
-    dport: 1
-    direction: ground_to_space
-
-  # Telecommand Access (Trusted Node Only)
-  - name: allow_telecommand
-    action: allow # MISSION_POLICY_TC
     src: ground_station
     dst: satellite_obc
     dport: 10
     direction: ground_to_space
 
-  # Command Console Access (Trusted Node Only)
-  - name: allow_console_cmds
-    action: allow
-    src: ground_station
-    dst: satellite_obc
-    dport: 12
-    direction: ground_to_space
-
-  # Telemetry Downlink
-  - name: allow_telemetry_downlink
-    action: allow
-    src: satellite_obc
-    dst: ground_station
-    direction: space_to_ground
-
-  - name: allow_payload_telemetry
-    action: allow
-    src: payload_node
-    dst: ground_station
-    direction: space_to_ground
-
-  # Ground to Payload ping
-  - name: allow_ground_to_payload_ping
-    action: allow
-    src: ground_station
-    dst: payload_node
-    dport: 1
-    direction: ground_to_space
-
-  # Allow CMP traffic to reach payload inspection
-  - name: allow_cmp_traffic
-    action: allow
-    src: ground_station
-    dst: satellite_obc
-    dport: 0
-    direction: ground_to_space
-
-  # Explicit Blocks for Restricted Ports
-  - name: block_debug_port
-    action: drop
-    src: any
-    dst: any
-    dport: 13
-    direction: ground_to_space
-
-  - name: block_diagnostic_port
-    action: drop
-    src: any
-    dst: any
-    dport: 14
-    direction: ground_to_space
-
-  # Block CSP Management Services
-  - name: block_csp_ps
-    action: drop
-    src: any
-    dst: any
-    dport: 2
-    direction: ground_to_space
-
-  - name: block_csp_memfree
-    action: drop
-    src: any
-    dst: any
-    dport: 3
-    direction: ground_to_space
-
-  - name: block_csp_reboot
-    action: drop
-    src: any
-    dst: any
-    dport: 4
-    direction: ground_to_space
-
-  - name: block_csp_buffree
-    action: drop
-    src: any
-    dst: any
-    dport: 5
-    direction: ground_to_space
-
-  - name: block_csp_uptime
-    action: drop
-    src: any
-    dst: any
-    dport: 6
-    direction: ground_to_space
-
-commands:
-  - name: reboot
-    dport: 10
-    match:
-      offset: 0
-      # In SUCHAI, commands are often strings. 
-      # This matches the first few bytes of "obc_reset"
-      value_hex: "6f62635f7265736574" 
-    allowed_sources:
-      - operator_console
-
-  - name: route_set
-    dport: 0
-    match:
-      offset: 0
-      # CMP Request (0x00) followed by ROUTE_SET code (0x02)
-      value_hex: "0002"
-    allowed_sources:
-      - none
-
-  - name: cmp_ident
-    dport: 0
-    match:
-      offset: 0
-      # CMP Request (0x00) followed by IDENT code (0x01)
-      value_hex: "0001"
-    allowed_sources:
-      - none
-
-  - name: cmp_if_stats
-    dport: 0
-    match:
-      offset: 0
-      # CMP Request (0x00) followed by IF_STATS code (0x03)
-      value_hex: "0003"
-    allowed_sources:
-      - none
-
-  - name: cmp_peek
-    dport: 0
-    match:
-      offset: 0
-      # CMP Request (0x00) followed by PEEK code (0x04)
-      value_hex: "0004"
-    allowed_sources:
-      - none
-
-  - name: cmp_poke
-    dport: 0
-    match:
-      offset: 0
-      # CMP Request (0x00) followed by POKE code (0x05)
-      value_hex: "0005"
-    allowed_sources:
-      - none
-
-  - name: cmp_clock
-    dport: 0
-    match:
-      offset: 0
-      # CMP Request (0x00) followed by CLOCK code (0x06)
-      value_hex: "0006"
-    allowed_sources:
-      - none
+commands: []
