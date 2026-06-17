@@ -21,8 +21,19 @@ sudo apt install -y docker.io docker-compose
 
 ### Installing
 
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+```bash
+git clone git@github.com:oramsey/csp-firewall.git
+```
+```bash
+cd csp-firewall
+```
+```bash
+git submodule update --init --recursive
+```
+### Test commands
+
+```
+```
 
 ### Executing program
 
@@ -41,11 +52,9 @@ command to run if program contains helper info
 
 ## Authors
 
-Contributors names and contact info
-
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
-
+Owen Ramsey 
+Efren Lopez Morales
+Carlos González
 ## Version History
 
 * 0.2
