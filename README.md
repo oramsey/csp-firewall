@@ -9,11 +9,11 @@ An in-depth paragraph about your project and overview of use.
 ## Getting Started
 
 ### Dependencies
-'''bash
+```bash
 sudo apt update                                                                                                                                
 sudo apt install -y gcc make cmake python3 pkg-config libzmq3-dev libsqlite3-dev libcunit1-dev
 sudo apt install -y docker.io docker-compose
-'''
+```
 
 ### Installing
 
