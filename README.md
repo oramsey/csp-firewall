@@ -169,9 +169,7 @@ cat docker/firewall/policy_OFF.yaml > docker/firewall/policy.yaml
 
 ## Authors
 
-Owen Ramsey, 
-Efren Lopez Morales,
-Carlos González
+Anonymized for peer review
 
 
 ## License
