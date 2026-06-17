@@ -1,6 +1,37 @@
-# CSP-Firewall
+<div align="center">
+  <kbd>
+    <img src="logo.png" alt="Stargate Firewall Logo" width="320" style="border: 3px solid white; border-radius: 10px;"/>
+  </kbd>
+</div>
+<br />
 
-Simple overview of use/purpose.
+# Stargate: A CubeSat Space Protocol Firewall
+
+Stargate is a modular firewall that block malicious CSP traffic. Stargate supports multiple types of policies to block specific CSP IDs, ports and payload telecommands.
+
+---
+
+## Research Paper
+
+**Placeholder** 
+
+If you use our work in a scientific publication, please do cite us using this **BibTex** entry:
+``` tex
+@inproceedings {,
+author = {},
+title = {},
+booktitle = {},
+year = {},
+isbn = {},
+address = {},
+pages = {},
+url = {},
+publisher = {},
+month = 
+}
+```
+
+
 
 ## Description
 
