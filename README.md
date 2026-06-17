@@ -126,27 +126,17 @@ cat docker/firewall/policy_OFF.yaml > docker/firewall/policy.yaml
 ***in a new terminal now***
 ./exploits/<yourexploit.sh>
 ```
+#### video examples
+[![Demonstration of running the CSP firewall](https://img.youtube.com/vi/R0oYROGg4cs/0.jpg)](https://www.youtube.com/watch?v=R0oYROGg4cs)
 
 
-## Help
-
-Any advise for common problems or issues.
-```
-command to run if program contains helper info
-```
 
 ## Authors
 
-Owen Ramsey 
-Efren Lopez Morales
+Owen Ramsey, 
+Efren Lopez Morales,
 Carlos González
-## Version History
 
-* 0.2
-    * Various bug fixes and optimizations
-    * See [commit change]() or See [release history]()
-* 0.1
-    * Initial Release
 
 ## License
 
