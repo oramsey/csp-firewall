@@ -128,6 +128,7 @@ cat docker/firewall/policy_OFF.yaml > docker/firewall/policy.yaml
 ```
 #### video examples
 [![Demonstration of running the CSP firewall](https://img.youtube.com/vi/R0oYROGg4cs/0.jpg)](https://www.youtube.com/watch?v=R0oYROGg4cs)
+[![Demonstration of running the exploit test](https://img.youtube.com/vi/D0oXyNb3ij0/0.jpg)](https://www.youtube.com/watch?v=D0oXyNb3ij0)
 
 
 
