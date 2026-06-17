@@ -3,6 +3,7 @@
 #include "policy_engine.h"
 #include "enforcement.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 // GomSpace ZMQhub internal structure to get the 'via' address
@@ -12,6 +13,9 @@ typedef struct {
     uint16_t length;
     csp_id_t id;
 } zmqhub_packet_t;
+
+// Forward declaration of internal libcsp function
+extern int csp_send_direct(csp_id_t idout, csp_packet_t * packet, const csp_route_t * ifroute, uint32_t timeout);
 
 void firewall_init(void) {
     printf("Firewall Core Active (Explicit Interception Mode).\n");
@@ -48,16 +52,28 @@ void process_packet(csp_iface_t *ground_if, csp_iface_t *space_if,
         return;
     }
 
-    printf("[Core] %s: %d -> %d (Port %d)\n", direction_str, h.src_node, h.dst_node, h.dst_port);
-    fflush(stdout);
-
     // 3. Extract 'via' address (Critical for ZMQ to work)
     uint8_t via = ((zmqhub_packet_t *)packet)->via;
 
-    // 4. Evaluate Security Policy
+    // 4. Check for Bypass Mode (WITHOUT firewall scenario)
+    const char *bypass_env = getenv("BYPASS");
+    if (bypass_env && strcmp(bypass_env, "1") == 0) {
+        csp_route_t route;
+        route.iface = output_if;
+        route.via = via;
+        if (csp_send_direct(packet->id, packet, &route, 0) != CSP_ERR_NONE) {
+            csp_buffer_free(packet);
+        }
+        return;
+    }
+
+    printf("[Core] %s: %d -> %d (Port %d)\n", direction_str, h.src_node, h.dst_node, h.dst_port);
+    fflush(stdout);
+
+    // 5. Evaluate Security Policy
     bool allowed = is_allowed(&h, packet->data, packet->length);
     
-    // 5. Enforce the decision
+    // 6. Enforce the decision
     enforce_policy(allowed, output_if, packet, via);
     
     printf("------------------------------\n");
