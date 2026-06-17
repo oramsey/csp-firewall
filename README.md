@@ -1,6 +1,6 @@
 <div align="center">
   <kbd>
-    <img src="logo.png" alt="Stargate Firewall Logo" width="320" style="border: 3px solid white; border-radius: 10px;"/>
+    <img src="img/logo.png" alt="Stargate Firewall Logo" width="320" style="border: 3px solid white; border-radius: 10px;"/>
   </kbd>
 </div>
 <br />
