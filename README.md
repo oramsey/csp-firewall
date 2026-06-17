@@ -116,6 +116,9 @@ cd csp-firewall
 sudo docker attach ground-node-a
 sudo docker attach malicious-node
 sudo docker attach sat-hub-b
+
+*** and here is the link to the suchai tutorial***
+[Read the SUCHAI Flight Software Tutorial](https://gitlab.com/spel-uchile/flight-software/suchai-flight-software-v2/-/blob/main/docs/tutorial.md)
 ```
 * To use the test exploits before you run manage.sh turn off the firewall
 * Then run whichever exploit you want
