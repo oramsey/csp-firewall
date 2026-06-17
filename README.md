@@ -92,11 +92,41 @@ git submodule update --init --recursive
 
 ### Executing program
 
-* How to run the program
-* Step-by-step bullets
+* Make sure you have everything installed
+* Go to the directory
 ```
-code blocks for commands
+cd csp-firewall
 ```
+* Make sure the firewall is on
+```
+cat docker/firewall/policy_ON.yaml > docker/firewall/policy.yaml
+```
+* Run the manage.sh script to run the docker compose
+```
+./manage.sh
+```
+* Then open another terminal and go back to the same directory
+* And run any test besides an exploit test
+```
+cd csp-firewall
+./tests/<yourtest.sh>
+```
+* You can also attach one of the nodes and manually run commands through their sucahi fs ui
+```
+sudo docker attach ground-node-a
+sudo docker attach malicious-node
+sudo docker attach sat-hub-b
+```
+* To use the test exploits before you run manage.sh turn off the firewall
+* Then run whichever exploit you want
+```
+cat docker/firewall/policy_OFF.yaml > docker/firewall/policy.yaml
+./manage.sh
+
+***in a new terminal now***
+./exploits/<yourexploit.sh>
+
+
 
 ## Help
 
