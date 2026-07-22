@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // GomSpace ZMQhub internal structure to get the 'via' address
 typedef struct {
@@ -70,8 +71,16 @@ void process_packet(csp_iface_t *ground_if, csp_iface_t *space_if,
     printf("[Core] %s: %d -> %d (Port %d)\n", direction_str, h.src_node, h.dst_node, h.dst_port);
     fflush(stdout);
 
-    // 5. Evaluate Security Policy
+    // 5. Evaluate Security Policy with microbenchmarking
+    struct timespec ts_start, ts_end;
+    clock_gettime(CLOCK_MONOTONIC, &ts_start);
+
     bool allowed = is_allowed(&h, packet->data, packet->length);
+
+    clock_gettime(CLOCK_MONOTONIC, &ts_end);
+    double elapsed_us = (ts_end.tv_sec - ts_start.tv_sec) * 1000000.0 + (ts_end.tv_nsec - ts_start.tv_nsec) / 1000.0;
+    printf("  [Policy] Evaluation took %.3f us\n", elapsed_us);
+    fflush(stdout);
     
     // 6. Enforce the decision
     enforce_policy(allowed, output_if, packet, via);
