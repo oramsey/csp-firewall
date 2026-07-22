@@ -4,6 +4,7 @@ import re
 import sys
 import statistics
 import time
+from collections import Counter
 
 def run_bench():
     print("Connecting to ground-node-a suchai-app...")
@@ -87,17 +88,30 @@ def run_bench():
     print(f"Sent: 100, Received: {len(rtts_internal)}, Loss: {100.0 * (100 - len(rtts_internal)) / 100.0:.1f}%")
     
     if len(rtts_internal) > 0:
+        mode_int = statistics.mode(rtts_internal)
+        counts_int = Counter(rtts_internal).most_common(3)
+        common_int_str = ", ".join([f"{val}ms ({cnt}x)" for val, cnt in counts_int])
+
         print("\n1. Internal CSP Stack RTT (reported by suchai-app in ms):")
         print(f"   Min   : {min(rtts_internal)} ms")
         print(f"   Max   : {max(rtts_internal)} ms")
         print(f"   Mean  : {statistics.mean(rtts_internal):.2f} ms")
         print(f"   Median: {statistics.median(rtts_internal):.2f} ms")
+        print(f"   Mode  : {mode_int} ms")
+        print(f"   Top 3 : {common_int_str}")
         
+        rtts_ext_rounded = [int(round(x)) for x in rtts_external]
+        mode_ext = statistics.mode(rtts_ext_rounded)
+        counts_ext = Counter(rtts_ext_rounded).most_common(3)
+        common_ext_str = ", ".join([f"{val}ms ({cnt}x)" for val, cnt in counts_ext])
+
         print("\n2. External Process-to-Process RTT (measured by Python in ms):")
         print(f"   Min   : {min(rtts_external):.2f} ms")
         print(f"   Max   : {max(rtts_external):.2f} ms")
         print(f"   Mean  : {statistics.mean(rtts_external):.2f} ms")
         print(f"   Median: {statistics.median(rtts_external):.2f} ms")
+        print(f"   Mode  : {mode_ext} ms")
+        print(f"   Top 3 : {common_ext_str}")
     else:
         print("No successful ping replies received!")
     print("="*50)
